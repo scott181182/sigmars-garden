@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use crate::errors::MatchSetError;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Coord {
     pub row: usize,
@@ -18,10 +20,10 @@ impl MatchSet {
         assert!(N > 0, "MatchSet must contain at least one item");
         Self(coords.into())
     }
-    fn try_from_iter<T: IntoIterator<Item = Coord>>(iter: T) -> Result<Self, ()> {
+    pub fn try_from_iter<T: IntoIterator<Item = Coord>>(iter: T) -> Result<Self, MatchSetError> {
         let set = HashSet::from_iter(iter);
         if set.is_empty() {
-            Err(())
+            Err(MatchSetError::EmptyMatchSet)
         } else {
             Ok(Self(set))
         }

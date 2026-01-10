@@ -1,4 +1,4 @@
-use sigmars::{BinaryTile, Board, Coord, ElementTile, Tile};
+use sigmars_lib::{BinaryTile, Board, Coord, ElementTile, Tile};
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
@@ -37,7 +37,7 @@ fn test_solve_good_boards() {
         }
 
         let mut board = read_board_file(&path);
-        let solution = sigmars::solve_board(&board);
+        let solution = sigmars_lib::solve_board(&board);
         assert!(
             solution.is_some(),
             "No solution found for board file {:?}",

@@ -3,20 +3,14 @@
 
 use std::str::FromStr;
 
-use crate::board::Board;
-
-mod board;
-mod coord;
-mod errors;
-mod solve;
-mod tile;
+use sigmars_lib::{Board, solve_board};
 
 fn main() {
     let filename = std::env::args().nth(1);
     if let Some(filename) = filename {
         let filedata = std::fs::read_to_string(filename).expect("Failed to read file");
         let board = Board::<6>::from_str(&filedata).expect("Failed to parse board");
-        match solve::solve_board(&board) {
+        match solve_board(&board) {
             Some(solution) => {
                 println!("Solution found with {} moves:", solution.len());
                 for match_set in solution {
@@ -31,6 +25,6 @@ fn main() {
             None => eprintln!("No solution found"),
         }
     } else {
-        eprintln!("Usage: sigmars <board_file>");
+        eprintln!("Usage: sigmars_cli <board_file>");
     }
 }
