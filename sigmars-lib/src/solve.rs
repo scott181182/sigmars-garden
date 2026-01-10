@@ -1,7 +1,8 @@
 use std::collections::HashMap;
 
-use crate::board::{Board, board_area};
+use crate::board::Board;
 use crate::coord::MatchSet;
+use crate::math::board_area;
 use crate::tile::Tile;
 
 enum MoveType {

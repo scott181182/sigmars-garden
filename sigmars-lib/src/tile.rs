@@ -1,16 +1,17 @@
-use crate::board::{Board, board_area};
-use crate::coord::{Coord, MatchSet, MatchSets};
+use crate::board::Board;
+use crate::coord::{BoardCoord, MatchSet, MatchSets};
 use crate::errors::BoardParseError;
+use crate::math::board_area;
 
 pub trait Matchable {
     fn filter_matches<'a, const S: usize, I>(
         &self,
-        coord: &Coord,
+        coord: &BoardCoord,
         board: &'a Board<S>,
         candidates: I,
     ) -> MatchSets
     where
-        I: Iterator<Item = (Coord, &'a Tile)>,
+        I: Iterator<Item = (BoardCoord, &'a Tile)>,
         [(); board_area::<S>()]:;
 }
 
@@ -24,12 +25,12 @@ pub enum ElementTile {
 impl Matchable for ElementTile {
     fn filter_matches<'a, const S: usize, I>(
         &self,
-        coord: &Coord,
+        coord: &BoardCoord,
         _board: &'a Board<S>,
         candidates: I,
     ) -> MatchSets
     where
-        I: Iterator<Item = (Coord, &'a Tile)>,
+        I: Iterator<Item = (BoardCoord, &'a Tile)>,
         [(); board_area::<S>()]:,
     {
         candidates
@@ -56,12 +57,12 @@ pub enum BinaryTile {
 impl Matchable for BinaryTile {
     fn filter_matches<'a, const S: usize, I>(
         &self,
-        coord: &Coord,
+        coord: &BoardCoord,
         _board: &'a Board<S>,
         tiles: I,
     ) -> MatchSets
     where
-        I: Iterator<Item = (Coord, &'a Tile)>,
+        I: Iterator<Item = (BoardCoord, &'a Tile)>,
         [(); board_area::<S>()]:,
     {
         tiles
@@ -112,12 +113,12 @@ impl TryFrom<char> for Tile {
 impl Matchable for Tile {
     fn filter_matches<'a, const S: usize, I>(
         &self,
-        coord: &Coord,
+        coord: &BoardCoord,
         board: &'a Board<S>,
         mut candidates: I,
     ) -> MatchSets
     where
-        I: Iterator<Item = (Coord, &'a Tile)>,
+        I: Iterator<Item = (BoardCoord, &'a Tile)>,
         [(); board_area::<S>()]:,
     {
         match self {
@@ -173,9 +174,9 @@ mod tests {
     fn test_element_tile_matches_same_type() {
         // Place two Fire tiles and one Water tile
         let tiles = [
-            (Coord::new(0, 0), Tile::Element(ElementTile::Fire)),
-            (Coord::new(0, 1), Tile::Element(ElementTile::Fire)),
-            (Coord::new(2, 1), Tile::Element(ElementTile::Water)),
+            (BoardCoord::new(0, 0), Tile::Element(ElementTile::Fire)),
+            (BoardCoord::new(0, 1), Tile::Element(ElementTile::Fire)),
+            (BoardCoord::new(2, 1), Tile::Element(ElementTile::Water)),
         ];
         let board = Board::<2>::from_iter(tiles);
         let match_sets = board.find_match_sets();
@@ -184,17 +185,17 @@ mod tests {
         let match_set = match_sets.into_iter().next().unwrap();
         assert!(match_set.len() == 2);
         // Should only have fire matches.
-        assert!(match_set.contains(&Coord::new(0, 0)));
-        assert!(match_set.contains(&Coord::new(0, 1)));
+        assert!(match_set.contains(&BoardCoord::new(0, 0)));
+        assert!(match_set.contains(&BoardCoord::new(0, 1)));
     }
 
     #[test]
     fn test_element_tile_does_not_match_other_types() {
         // Place two Fire tiles and one Water tile
         let tiles = [
-            (Coord::new(0, 0), Tile::Element(ElementTile::Fire)),
-            (Coord::new(0, 1), Tile::Element(ElementTile::Earth)),
-            (Coord::new(2, 1), Tile::Element(ElementTile::Water)),
+            (BoardCoord::new(0, 0), Tile::Element(ElementTile::Fire)),
+            (BoardCoord::new(0, 1), Tile::Element(ElementTile::Earth)),
+            (BoardCoord::new(2, 1), Tile::Element(ElementTile::Water)),
         ];
         let board = Board::<2>::from_iter(tiles);
         let match_sets = board.find_match_sets();
@@ -205,7 +206,7 @@ mod tests {
     #[test]
     fn test_element_tile_does_not_match_self() {
         // Place one Fire tile
-        let tiles = [(Coord::new(1, 1), Tile::Element(ElementTile::Fire))];
+        let tiles = [(BoardCoord::new(1, 1), Tile::Element(ElementTile::Fire))];
         let board = Board::<2>::from_iter(tiles);
         let match_sets = board.find_match_sets();
 
@@ -217,17 +218,26 @@ mod tests {
     fn test_element_tile_multiple_matches() {
         // Place three Water tiles
         let tiles = [
-            (Coord::new(0, 0), Tile::Element(ElementTile::Water)),
-            (Coord::new(1, 2), Tile::Element(ElementTile::Water)),
-            (Coord::new(2, 0), Tile::Element(ElementTile::Water)),
+            (BoardCoord::new(0, 0), Tile::Element(ElementTile::Water)),
+            (BoardCoord::new(1, 2), Tile::Element(ElementTile::Water)),
+            (BoardCoord::new(2, 0), Tile::Element(ElementTile::Water)),
         ];
         let board = Board::<2>::from_iter(tiles);
         let match_sets = board.find_match_sets();
 
         // Should match with both other Water tiles
         assert_eq!(match_sets.len(), 3);
-        assert!(match_sets.contains(&MatchSet::from([Coord::new(0, 0), Coord::new(1, 2)])));
-        assert!(match_sets.contains(&MatchSet::from([Coord::new(0, 0), Coord::new(2, 0)])));
-        assert!(match_sets.contains(&MatchSet::from([Coord::new(1, 2), Coord::new(2, 0)])));
+        assert!(match_sets.contains(&MatchSet::from([
+            BoardCoord::new(0, 0),
+            BoardCoord::new(1, 2)
+        ])));
+        assert!(match_sets.contains(&MatchSet::from([
+            BoardCoord::new(0, 0),
+            BoardCoord::new(2, 0)
+        ])));
+        assert!(match_sets.contains(&MatchSet::from([
+            BoardCoord::new(1, 2),
+            BoardCoord::new(2, 0)
+        ])));
     }
 }

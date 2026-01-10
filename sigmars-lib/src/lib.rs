@@ -4,6 +4,7 @@
 mod board;
 mod coord;
 mod errors;
+pub mod math;
 mod solve;
 mod tile;
 

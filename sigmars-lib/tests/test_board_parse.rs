@@ -1,4 +1,4 @@
-use sigmars_lib::{BinaryTile, Board, Coord, ElementTile, Tile};
+use sigmars_lib::{BinaryTile, Board, BoardCoord, ElementTile, Tile};
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
@@ -77,10 +77,10 @@ fn test_parse_board1() {
     assert_eq!(board.tiles().filter(|t| t == &&Tile::Empty).count(), 36);
     let selectable_tiles = board.selectable_tiles();
     assert_eq!(selectable_tiles.len(), 6);
-    assert!(selectable_tiles.contains(&(Coord::new(0, 2), &Tile::Binary(BinaryTile::Life))));
-    assert!(selectable_tiles.contains(&(Coord::new(2, 7), &Tile::Binary(BinaryTile::Death))));
-    assert!(selectable_tiles.contains(&(Coord::new(3, 0), &Tile::Element(ElementTile::Air))));
-    assert!(selectable_tiles.contains(&(Coord::new(7, 8), &Tile::Element(ElementTile::Water))));
-    assert!(selectable_tiles.contains(&(Coord::new(8, 0), &Tile::Element(ElementTile::Fire))));
-    assert!(selectable_tiles.contains(&(Coord::new(10, 3), &Tile::Element(ElementTile::Water))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(0, 2), &Tile::Binary(BinaryTile::Life))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(2, 7), &Tile::Binary(BinaryTile::Death))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(3, 0), &Tile::Element(ElementTile::Air))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(7, 8), &Tile::Element(ElementTile::Water))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(8, 0), &Tile::Element(ElementTile::Fire))));
+    assert!(selectable_tiles.contains(&(BoardCoord::new(10, 3), &Tile::Element(ElementTile::Water))));
 }
