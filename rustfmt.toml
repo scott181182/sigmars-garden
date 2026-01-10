@@ -1,0 +1,2 @@
+# rustfmt configuration: prefer one module per use statement
+imports_granularity = "Module"
