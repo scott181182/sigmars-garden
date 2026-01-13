@@ -3,14 +3,14 @@
 
 use std::str::FromStr;
 
-use sigmars_lib::{Board, solve_board};
+use sigmars_lib::{Board, solve_dfs};
 
 fn main() {
     let filename = std::env::args().nth(1);
     if let Some(filename) = filename {
         let filedata = std::fs::read_to_string(filename).expect("Failed to read file");
         let board = Board::<6>::from_str(&filedata).expect("Failed to parse board");
-        match solve_board(&board) {
+        match solve_dfs(&board) {
             Some(solution) => {
                 println!("Solution found with {} moves:", solution.len());
                 for match_set in solution {
